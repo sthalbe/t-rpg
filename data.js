@@ -1,4 +1,4 @@
-export const data = {
+const data = {
     stats : {
         str : 10,
         vit : 10,

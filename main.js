@@ -1,61 +1,63 @@
-import { data } from './data.js';
+const messageDiv = document.getElementById("message");
+const nameInput = document.getElementById("name-input");
+const enterNameButton = document.getElementById("enter-name-button");
+const classChoicesDiv = document.getElementById("class-choices");
+const classRadioButtons = classChoicesDiv.querySelectorAll("input[name='class']");
+const startButton = document.getElementById("start-button");
 
-// Assuming you have a function to initialize your game on page load
-document.addEventListener('DOMContentLoaded', function() {
-    initializeGame();
+enterNameButton.addEventListener("click", enterName);
+classRadioButtons.forEach(radioButton => {
+    radioButton.addEventListener("change", enableStartButton);
 });
 
-function initializeGame() {
-    // Create a hero and an enemy
-    let hero = createCharacter();
-    let enemy = createCharacter();
-
-    // Generate cards for the hero and enemy
-    generateCharacterCard(hero, 'heroCard', 'Hero');
-    generateCharacterCard(enemy, 'enemyCard', 'Enemy');
+function showMessage(text) {
+    messageDiv.textContent = text;
 }
 
-function generateCharacterCard(character, cardId, cardTitle) {
-    // Create a Materialize card
-    let cardHTML = `
-        <div class="col s12 m6">
-            <div class="card blue-grey darken-1">
-                <div class="card-content white-text">
-                    <span class="card-title">${cardTitle}</span>
-                    <!-- Display character information here -->
-                    <p>HP: ${character.spec.hp}</p>
-                    <p>MP: ${character.spec.mp}</p>
-                    <p>ATK: ${character.spec.atk}</p>
-                    <p>DEF: ${character.spec.def}</p>
-                    <p>MR: ${character.spec.mr}</p>
-                    <!-- Add more information as needed -->
-                </div>
-            </div>
-        </div>
-    `;
+showMessage("Please enter your name.");
 
-    // Add the card to the container
-    let container = document.getElementById('characterCards');
-    container.insertAdjacentHTML('beforeend', cardHTML);
+function enterName() {
+    const playerName = nameInput.value.trim();
+    if (playerName === "") {
+        showMessage("Please enter your name.");
+    } else {
+        showMessage(`Welcome, ${playerName}! Please choose your class.`);
+        showClassChoices();
+    }
 }
 
-function createCharacter(){
-    let character = {
-        stats: Object.create(data.stats),
-        spec: Object.create(data.spec)
-    };
+function showClassChoices() {
+    classChoicesDiv.style.display = "block";
+    const selectedClass = getClassSelection();
+    if (!selectedClass) {
+        showMessage("Please select a class.");
+    startButton.disabled = true;
 
-    return character;
+        // startButton.style.display = "none";
+    } else {
+        showMessage(`You have chosen the ${selectedClass} class. The game is starting...`);   
+        const classStats = data.stats[selectedClass];
+        const classSpecs = data.spec[selectedClass];
+        // Example: Display class stats
+        showMessage(`Class Stats: STR ${classStats.str}, VIT ${classStats.vit}, INT ${classStats.int}, ...`);
+
+        // Example: Display class specs
+        showMessage(`Class Specs: HP ${classSpecs.hp}, MP ${classSpecs.mp}, ATK ${classSpecs.atk}, ...`);
+        
+        // startButton.style.display = "block";
+        startButton.addEventListener("click", startGame);
+    }
 }
 
-function setStats(character, stats)
-{
-    character.stats = stats;
-    return character;
+function getClassSelection() {
+    const selectedRadioButton = classChoicesDiv.querySelector("input[name='class']:checked");
+    return selectedRadioButton ? selectedRadioButton.value : null;
 }
 
-function updateSpec(character)
-{
-    //update
-    return character
+function enableStartButton() {
+    startButton.disabled = false;
+}
+
+function startGame(){
+
 }
