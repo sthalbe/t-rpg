@@ -7,13 +7,14 @@ const startButton = document.getElementById("start-button");
 
 enterNameButton.addEventListener("click", enterName);
 classRadioButtons.forEach(radioButton => {
-    radioButton.addEventListener("change", enableStartButton);
+    radioButton.addEventListener("change", showClassChoices);
 });
 
 function showMessage(text) {
     messageDiv.textContent = text;
 }
 
+let myHero = {};
 showMessage("Please enter your name.");
 
 function enterName() {
@@ -21,31 +22,9 @@ function enterName() {
     if (playerName === "") {
         showMessage("Please enter your name.");
     } else {
+        myHero.name = playerName;
         showMessage(`Welcome, ${playerName}! Please choose your class.`);
-        showClassChoices();
-    }
-}
-
-function showClassChoices() {
-    classChoicesDiv.style.display = "block";
-    const selectedClass = getClassSelection();
-    if (!selectedClass) {
-        showMessage("Please select a class.");
-    startButton.disabled = true;
-
-        // startButton.style.display = "none";
-    } else {
-        showMessage(`You have chosen the ${selectedClass} class. The game is starting...`);   
-        const classStats = data.stats[selectedClass];
-        const classSpecs = data.spec[selectedClass];
-        // Example: Display class stats
-        showMessage(`Class Stats: STR ${classStats.str}, VIT ${classStats.vit}, INT ${classStats.int}, ...`);
-
-        // Example: Display class specs
-        showMessage(`Class Specs: HP ${classSpecs.hp}, MP ${classSpecs.mp}, ATK ${classSpecs.atk}, ...`);
-        
-        // startButton.style.display = "block";
-        startButton.addEventListener("click", startGame);
+        classChoicesDiv.style.display = "block";
     }
 }
 
@@ -54,8 +33,62 @@ function getClassSelection() {
     return selectedRadioButton ? selectedRadioButton.value : null;
 }
 
-function enableStartButton() {
+function showClassChoices() {
     startButton.disabled = false;
+    const selectedClass = getClassSelection();
+    if (!selectedClass) {
+        showMessage("Please select a class.");
+        startButton.disabled = true;
+
+        // startButton.style.display = "none";
+    } else {
+        myHero.className = selectedClass;
+        const statsViewDiv = document.getElementById("stats-view");
+        showMessage(`You have chosen the ${selectedClass} class. The game is starting...`);   
+        const classStats = getClassStats(selectedClass);
+        const statsMessage = `
+            <p><strong>Class Stats:</strong></p>
+            <p>STR: ${classStats.str}</p>
+            <p>VIT: ${classStats.vit}</p>
+            <p>INT: ${classStats.int}</p>
+            <p>WIS: ${classStats.wis}</p>
+            <p>DEX: ${classStats.dex}</p>
+            <p>AGI: ${classStats.agi}</p>
+        `;
+        myHero.stats = classStats;
+        statsViewDiv.innerHTML = statsMessage;
+        statsViewDiv.style.display = "block";
+
+        startButton.addEventListener("click", startGame);
+    }
+}
+
+function getClassStats(className){
+    let stats = {};
+    if(className === "warrior"){
+        stats.str = 15;
+        stats.vit = 13;
+        stats.int = 5;
+        stats.wis = 6;
+        stats.dex = 10;
+        stats.agi = 11;
+    }else if(className === "druid"){
+        stats.str = 12;
+        stats.vit = 11;
+        stats.int = 9;
+        stats.wis = 11;
+        stats.dex = 7;
+        stats.agi = 10;
+    }else if(className === "wizard"){
+        stats.str = 5;
+        stats.vit = 6;
+        stats.int = 19;
+        stats.wis = 13;
+        stats.dex = 11;
+        stats.agi = 6;
+    }
+
+    return stats;
 }
 
 function startGame(){
